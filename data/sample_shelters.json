@@ -1,0 +1,46 @@
+[
+  {
+    "node_id": "N04",
+    "name": "City Stadium Shelter",
+    "capacity": 5000,
+    "supplies": {
+      "food": 400,
+      "water": 600,
+      "medical_kits": 120,
+      "rescue_teams": 10
+    }
+  },
+  {
+    "node_id": "N05",
+    "name": "Community Center Alpha",
+    "capacity": 2000,
+    "supplies": {
+      "food": 200,
+      "water": 300,
+      "medical_kits": 60,
+      "rescue_teams": 5
+    }
+  },
+  {
+    "node_id": "N06",
+    "name": "High-Ground School Complex",
+    "capacity": 1500,
+    "supplies": {
+      "food": 150,
+      "water": 250,
+      "medical_kits": 40,
+      "rescue_teams": 4
+    }
+  },
+  {
+    "node_id": "N07",
+    "name": "Hill Crest Evacuation Base",
+    "capacity": 3000,
+    "supplies": {
+      "food": 300,
+      "water": 450,
+      "medical_kits": 90,
+      "rescue_teams": 8
+    }
+  }
+]

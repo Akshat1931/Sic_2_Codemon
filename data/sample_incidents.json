@@ -1,0 +1,42 @@
+[
+  {
+    "location": "N08",
+    "disaster_type": "Cyclone",
+    "severity": "Critical",
+    "population_affected": 45000,
+    "description": "Chennai Coastal Zone - Severe surge & flooding",
+    "reporter": "Field Unit Alpha"
+  },
+  {
+    "location": "N09",
+    "disaster_type": "Flood",
+    "severity": "High",
+    "population_affected": 12000,
+    "description": "Adyar River Banks - Severe overflowing",
+    "reporter": "Coast Guard"
+  },
+  {
+    "location": "N10",
+    "disaster_type": "Earthquake",
+    "severity": "Medium",
+    "population_affected": 8500,
+    "description": "Tambaram Old Town - Structural damage",
+    "reporter": "Seismic Team"
+  },
+  {
+    "location": "N11",
+    "disaster_type": "Flood",
+    "severity": "Low",
+    "population_affected": 3200,
+    "description": "Velachery Suburb - Water logging",
+    "reporter": "District Collector"
+  },
+  {
+    "location": "N12",
+    "disaster_type": "Fire",
+    "severity": "High",
+    "population_affected": 1800,
+    "description": "Anna Nagar West - Industrial warehouse fire",
+    "reporter": "Fire Chief"
+  }
+]

@@ -1,0 +1,2462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DisasterOS — Emergency Command System</title>
+  
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js CDN for interactive charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   <style>
+    /* ══════════════════════════════════════════════════════════
+       PREMIUM CYBER-TACTICAL COMMAND SYSTEM (AEGIS THEME)
+     ══════════════════════════════════════════════════════════ */
+    :root {
+      --bg-deep:      #020617; /* Deep slate void */
+      --bg-dark:      #0f172a; /* Tactical surface */
+      --bg-card:      rgba(15, 23, 42, 0.65); /* Frosted glass panel */
+      --bg-glass:     rgba(15, 23, 42, 0.8);
+      --bg-glass-active: rgba(245, 158, 11, 0.08); /* Amber active tint */
+      
+      /* Tactical Cyber Borders and Glows */
+      --border:       rgba(255, 255, 255, 0.05); /* Thin borders */
+      --border-hover: rgba(245, 158, 11, 0.45); /* Tactical Amber border on hover */
+      --border-glow:  rgba(245, 158, 11, 0.3);
+      
+      /* HSL Brand Colorways */
+      --brand-indigo: #ffb95f; /* Tactical Amber as primary brand color */
+      --brand-teal:   #06b6d4; /* Tactical Cyan */
+      --brand-emerald:#10b981; /* Medical Green */
+      --brand-amber:  #f59e0b; /* Tactical Amber */
+      --brand-rose:   #ef4444; /* Warning Red */
+      --brand-violet: #8b5cf6;
+
+      /* Cyber Accent Map */
+      --accent-cyan:  #06b6d4;
+      --accent-gold:  #f59e0b;
+
+      /* Severities Map */
+      --sev-low:      #10b981;
+      --sev-medium:   #f59e0b;
+      --sev-high:     #f97316;
+      --sev-critical: #ef4444;
+
+      /* Text Hierarchy */
+      --text-primary:   #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted:     #64748b;
+
+      --sidebar-w:    280px;
+      --radius-card:  4px; /* Milled soft-tactical shape */
+      --radius-btn:   4px; /* Milled hardware look */
+      --transition:   0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      
+      --shadow-card:  0 12px 30px -10px rgba(0, 0, 0, 0.9);
+      --shadow-glow:  0 0 20px rgba(245, 158, 11, 0.15);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 15px; scroll-behavior: smooth; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      height: 100vh; overflow: hidden;
+      display: flex;
+      position: relative;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       TACTICAL BACKGROUND RADIAL GRID & AMBIENT ORBS
+     ══════════════════════════════════════════════════════════ */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image: radial-gradient(rgba(245, 158, 11, 0.05) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+    }
+    
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(circle 800px at 10% 20%, rgba(245, 158, 11, 0.08) 0%, transparent 70%),
+        radial-gradient(circle 600px at 90% 80%, rgba(6, 182, 212, 0.06) 0%, transparent 70%),
+        radial-gradient(circle 400px at 50% 50%, rgba(16, 185, 129, 0.03) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       SIDEBAR CONTROL PANEL
+     ══════════════════════════════════════════════════════════ */
+    .sidebar {
+      position: fixed; left: 0; top: 0; bottom: 0;
+      width: var(--sidebar-w);
+      background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex; flex-direction: column;
+      z-index: 100;
+      backdrop-filter: blur(30px);
+    }
+
+    .sidebar-logo {
+      padding: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.15);
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .logo-icon {
+      width: 42px; height: 42px;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
+      position: relative;
+    }
+
+    .logo-icon::before {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.05);
+      pointer-events: none;
+    }
+    
+    .logo-icon-svg {
+      width: 22px; height: 22px;
+      color: #ffb95f;
+      stroke-width: 2px;
+    }
+    
+    .logo-text-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-text { 
+      font-family: 'Inter', sans-serif;
+      font-size: 1.35rem; 
+      font-weight: 800; 
+      color: var(--text-primary); 
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+    }
+    
+    .logo-sub { 
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; 
+      color: var(--text-secondary); 
+      letter-spacing: 0.08em; 
+      text-transform: uppercase; 
+      margin-top: 1px; 
+      font-weight: 700;
+      opacity: 0.8;
+    }
+
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px;
+      background: rgba(16, 185, 129, 0.06);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 2px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; color: var(--brand-emerald);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    
+    .status-dot {
+      width: 6px; height: 6px;
+      background: var(--brand-emerald);
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+      box-shadow: 0 0 8px var(--brand-emerald);
+    }
+    
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    .nav-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 14px;
+    }
+    
+    .nav-scroll::-webkit-scrollbar { width: 4px; }
+    .nav-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 2px; }
+
+    .nav-section { margin-bottom: 28px; }
+    .nav-label { 
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; 
+      letter-spacing: 0.12em; 
+      text-transform: uppercase; 
+      color: var(--text-muted); 
+      padding: 0 16px 8px; 
+      font-weight: 700;
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 16px;
+      border-radius: var(--radius-btn);
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 0.88rem; font-weight: 500;
+      transition: var(--transition);
+      position: relative;
+      border: 1px solid transparent;
+      margin-bottom: 5px;
+    }
+    
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text-primary);
+      border-color: rgba(255, 255, 255, 0.03);
+    }
+    
+    .nav-item.active {
+      background: var(--bg-glass-active);
+      border-color: rgba(245, 158, 11, 0.22);
+      color: #ffddb8;
+      box-shadow: inset 0 0 10px rgba(245, 158, 11, 0.05);
+    }
+    
+    .nav-item.active::before {
+      content: '';
+      position: absolute; left: -1px; top: 25%; bottom: 25%;
+      width: 3px; border-radius: 0 4px 4px 0;
+      background: var(--brand-amber);
+      box-shadow: 0 0 8px var(--brand-amber);
+    }
+    
+    .nav-icon-svg {
+      width: 17px; height: 17px;
+      stroke-width: 2px;
+    }
+    
+    .nav-badge {
+      margin-left: auto;
+      padding: 2px 8px;
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      border-radius: 2px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--brand-rose);
+      box-shadow: 0 0 10px rgba(244, 63, 94, 0.1);
+    }
+
+    .sidebar-footer {
+      padding: 20px 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.25);
+    }
+    
+    .mini-stat {
+      display: flex; justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 0.8rem;
+    }
+    
+    .mini-stat-label { color: var(--text-secondary); }
+    .mini-stat-val { font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+
+    /* ══════════════════════════════════════════════════════════
+       MAIN CONTENT CONTAINER
+     ══════════════════════════════════════════════════════════ */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1; display: flex; flex-direction: column;
+      height: 100vh; overflow: hidden;
+      position: relative; z-index: 1;
+    }
+
+    /* Top Bar styles */
+    .topbar {
+      display: flex; align-items: center;
+      padding: 0 32px;
+      height: 64px;
+      background: rgba(5, 9, 20, 0.65);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(30px);
+      gap: 16px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .topbar::after {
+      content: '';
+      position: absolute; left: 0; bottom: -1px; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.25), transparent);
+    }
+    
+    .topbar-title { 
+      font-family: 'Inter', sans-serif;
+      font-size: 1.15rem; 
+      font-weight: 800; 
+      flex: 1; 
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    
+    .topbar-time { 
+      font-family: 'JetBrains Mono', monospace; 
+      font-size: 0.82rem; 
+      color: var(--text-secondary); 
+      background: rgba(255, 255, 255, 0.03);
+      padding: 5px 12px;
+      border-radius: 2px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    
+    .alert-strip {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 14px;
+      background: rgba(244, 63, 94, 0.06);
+      border: 1px solid rgba(244, 63, 94, 0.22);
+      border-radius: 2px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; color: var(--brand-rose);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      animation: blink-border 3s ease-in-out infinite;
+    }
+    
+    @keyframes blink-border {
+      0%, 100% { border-color: rgba(244, 63, 94, 0.15); background: rgba(244, 63, 94, 0.04); }
+      50%      { border-color: rgba(244, 63, 94, 0.45); background: rgba(244, 63, 94, 0.1); }
+    }
+
+    /* Content Area styling */
+    .content-area {
+      flex: 1; overflow-y: auto;
+      padding: 32px;
+      scroll-behavior: smooth;
+    }
+    
+    .content-area::-webkit-scrollbar { width: 6px; }
+    .content-area::-webkit-scrollbar-track { background: transparent; }
+    .content-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.06); border-radius: 3px; }
+    .content-area::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.12); }
+
+    /* Sections transitions */
+    .section { display: none; animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+    .section.active { display: block; }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       CARDS WITH CYBER CORNERS AND NEON ACCENTS
+     ══════════════════════════════════════════════════════════ */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 24px;
+      backdrop-filter: blur(25px);
+      box-shadow: var(--shadow-card);
+      transition: var(--transition);
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    /* Cyber Corner Brackets */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: -1px;
+      width: 10px; height: 10px;
+      border-top: 2px solid var(--brand-indigo);
+      border-left: 2px solid var(--brand-indigo);
+      border-top-left-radius: var(--radius-card);
+      pointer-events: none;
+      transition: var(--transition);
+    }
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; right: -1px;
+      width: 10px; height: 10px;
+      border-bottom: 2px solid var(--brand-indigo);
+      border-right: 2px solid var(--brand-indigo);
+      border-bottom-right-radius: var(--radius-card);
+      pointer-events: none;
+      transition: var(--transition);
+    }
+    
+    .card:hover { 
+      border-color: var(--border-hover); 
+      box-shadow: var(--shadow-glow), var(--shadow-card); 
+      transform: translateY(-2px);
+    }
+
+    .card:hover::before, .card:hover::after {
+      width: 18px; height: 18px;
+      border-color: #ffb95f;
+    }
+
+    .card-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    
+    .card-title { 
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700; 
+      font-size: 0.85rem; 
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    
+    .card-icon-svg {
+      width: 18px; height: 18px;
+      stroke-width: 2px;
+      color: #ffb95f;
+    }
+    
+    .card-badge {
+      margin-left: auto;
+      padding: 3px 10px;
+      border-radius: 2px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 700;
+    }
+
+    /* KPI Grid */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 20px;
+      position: relative; overflow: hidden;
+      transition: var(--transition);
+      cursor: default;
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: -1px;
+      width: 8px; height: 8px;
+      border-top: 2px solid var(--kpi-color, var(--brand-indigo));
+      border-left: 2px solid var(--kpi-color, var(--brand-indigo));
+      border-top-left-radius: var(--radius-card);
+      pointer-events: none;
+      transition: var(--transition);
+    }
+    .kpi-card::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; right: -1px;
+      width: 8px; height: 8px;
+      border-bottom: 2px solid var(--kpi-color, var(--brand-indigo));
+      border-right: 2px solid var(--kpi-color, var(--brand-indigo));
+      border-bottom-right-radius: var(--radius-card);
+      pointer-events: none;
+      transition: var(--transition);
+    }
+    
+    .kpi-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 12px 35px -10px rgba(0, 0, 0, 0.95), 0 0 20px rgba(var(--kpi-color-rgb, 99, 102, 241), 0.15);
+    }
+    .kpi-card:hover::before, .kpi-card:hover::after {
+      width: 14px; height: 14px;
+    }
+    
+    .kpi-value { 
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.1rem; 
+      font-weight: 700; 
+      color: var(--kpi-color, var(--text-primary)); 
+      letter-spacing: -0.02em; 
+      margin-top: 8px;
+    }
+    
+    .kpi-label { 
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; 
+      color: var(--text-secondary); 
+      margin-top: 4px; 
+      font-weight: 700; 
+      text-transform: uppercase; 
+      letter-spacing: 0.08em; 
+    }
+    .kpi-sub { font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; font-weight: 500; }
+    
+    .kpi-icon-svg { 
+      position: absolute; right: 20px; top: 20px; 
+      width: 24px; height: 24px;
+      stroke-width: 1.5px;
+      opacity: 0.28; 
+      color: var(--kpi-color, var(--text-secondary));
+    }
+
+    /* Grid Layouts */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+    .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+    .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+
+    /* ══════════════════════════════════════════════════════════
+       TACTICAL HUD BUTTONS (MILLED HARDWARE DESIGN)
+     ══════════════════════════════════════════════════════════ */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 10px 18px;
+      border: 1px solid transparent; border-radius: var(--radius-btn);
+      font-family: 'JetBrains Mono', monospace; 
+      font-size: 0.75rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      cursor: pointer; transition: var(--transition);
+      white-space: nowrap; outline: none;
+      position: relative;
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: var(--radius-btn);
+      border: 1px solid rgba(255,255,255,0.06);
+      pointer-events: none;
+    }
+
+    .btn-primary {
+      background: #f59e0b;
+      color: #020617;
+      border-color: #f59e0b;
+    }
+    .btn-primary:hover { 
+      background: #ffb95f;
+      transform: translateY(-1px); 
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.45);
+    }
+    
+    .btn-success {
+      background: #10b981;
+      color: #020617;
+      border-color: #10b981;
+    }
+    .btn-success:hover { 
+      background: #34d399;
+      transform: translateY(-1px); 
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+    }
+    
+    .btn-danger {
+      background: #ef4444;
+      color: #ffffff;
+      border-color: #ef4444;
+    }
+    .btn-danger:hover { 
+      background: #f87171;
+      transform: translateY(-1px);
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+    }
+    
+    .btn-ghost {
+      background: rgba(15, 23, 42, 0.35);
+      color: var(--text-secondary);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .btn-ghost:hover { 
+      background: rgba(15, 23, 42, 0.65);
+      color: var(--text-primary); 
+      border-color: #ffb95f; 
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
+    }
+    
+    .btn-warning {
+      background: #f59e0b;
+      color: #020617;
+      border-color: #f59e0b;
+    }
+    .btn-warning:hover { 
+      background: #ffb95f;
+      transform: translateY(-1px); 
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.45);
+    }
+    
+    .btn:active { transform: scale(0.97); }
+    .btn-svg { width: 14px; height: 14px; stroke-width: 2.5px; }
+
+    /* ══════════════════════════════════════════════════════════
+       FORM FIELDS
+     ══════════════════════════════════════════════════════════ */
+    .form-group { margin-bottom: 16px; }
+    .form-label { 
+      display: block; 
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; color: var(--text-secondary); 
+      margin-bottom: 6px; font-weight: 700; 
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    
+    .form-control {
+      width: 100%;
+      background: rgba(4, 7, 15, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-card);
+      color: var(--text-primary);
+      padding: 11px 14px;
+      font-family: 'Inter', sans-serif; font-size: 0.85rem;
+      transition: var(--transition); outline: none;
+    }
+    
+    .form-control:focus { 
+      border-color: #ffb95f; 
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15), inset 0 0 8px rgba(245, 158, 11, 0.05); 
+    }
+    
+    .form-control::placeholder { color: var(--text-muted); }
+    select.form-control option { background: #080c16; color: var(--text-primary); }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* ══════════════════════════════════════════════════════════
+       INCIDENT TIMELINES & TELEMETRY LISTS
+     ══════════════════════════════════════════════════════════ */
+    .incident-list { display: flex; flex-direction: column; gap: 10px; }
+    
+    .incident-row {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 18px;
+      background: rgba(15, 23, 42, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-left: 4px solid var(--sev-color, var(--text-muted));
+      border-radius: var(--radius-card);
+      cursor: pointer; transition: var(--transition);
+      position: relative; overflow: hidden;
+    }
+
+    .incident-row::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, var(--sev-color) 0%, transparent 100%);
+      opacity: 0;
+      transition: opacity 0.25s;
+      pointer-events: none;
+    }
+    
+    .incident-row:hover { 
+      background: rgba(15, 23, 42, 0.75); 
+      border-color: rgba(245, 158, 11, 0.22); 
+      transform: translateX(4px); 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5), 0 0 10px rgba(245, 158, 11, 0.05);
+    }
+    
+    .incident-row:hover::before { opacity: 0.03; }
+    
+    .incident-row.resolved { opacity: 0.45; }
+    .incident-row.resolved:hover { transform: none; box-shadow: none; border-color: rgba(255, 255, 255, 0.03); }
+    
+    .incident-id { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
+    .incident-type { font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+    .incident-loc { 
+      font-size: 0.78rem; 
+      color: var(--text-secondary); 
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .row-icon-svg {
+      width: 13px; height: 13px;
+      color: var(--text-muted);
+    }
+    
+    .incident-pop { font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; font-weight: 700; }
+    
+    .sev-badge {
+      padding: 3px 9px; border-radius: 2px; 
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap;
+    }
+    
+    .sev-Low      { background: rgba(16, 185, 129, 0.08);  color: var(--sev-low);      border: 1px solid rgba(16, 185, 129, 0.22); }
+    .sev-Medium   { background: rgba(245, 158, 11, 0.08);   color: var(--sev-medium);   border: 1px solid rgba(245, 158, 11, 0.22); }
+    .sev-High     { background: rgba(249, 115, 22, 0.08);  color: var(--sev-high);     border: 1px solid rgba(249, 115, 22, 0.22); }
+    .sev-Critical { background: rgba(239, 68, 68, 0.08);   color: var(--sev-critical); border: 1px solid rgba(239, 68, 68, 0.25); animation: critical-pulse 2.5s ease-in-out infinite; }
+    
+    @keyframes critical-pulse { 50% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); } }
+
+    .status-badge {
+      padding: 3px 8px; border-radius: 2px; 
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em;
+    }
+    .status-Active   { background: rgba(6, 182, 212, 0.06);  color: var(--accent-cyan);  border: 1px solid rgba(6, 182, 212, 0.18); }
+    .status-Pending  { background: rgba(245, 158, 11, 0.06);  color: var(--accent-gold);  border: 1px solid rgba(245, 158, 11, 0.18); }
+    .status-Reported { background: rgba(245, 158, 11, 0.06);  color: var(--accent-gold);  border: 1px solid rgba(245, 158, 11, 0.18); }
+    .status-Contained { background: rgba(139, 92, 246, 0.06); color: var(--brand-violet); border: 1px solid rgba(139, 92, 246, 0.18); }
+    .status-Resolved { background: rgba(71, 85, 105, 0.1);    color: #94a3b8;             border: 1px solid rgba(71, 85, 105, 0.15); }
+
+    /* ══════════════════════════════════════════════════════════
+       DISPATCH TIMELINE
+     ══════════════════════════════════════════════════════════ */
+    .queue-wrap { display: flex; flex-direction: column; gap: 8px; max-height: 340px; overflow-y: auto; }
+    
+    .queue-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px;
+      background: rgba(10, 16, 28, 0.4);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card); font-size: 0.82rem;
+      animation: slide-in 0.3s ease;
+      position: relative;
+    }
+
+    .queue-item::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px; background: var(--brand-amber);
+      border-top-left-radius: 10px; border-bottom-left-radius: 10px;
+    }
+    
+    @keyframes slide-in { from { opacity: 0; transform: translateX(-10px); } }
+    .queue-num { font-family: 'JetBrains Mono', monospace; color: var(--text-muted); font-size: 0.72rem; min-width: 28px; font-weight: 600; }
+    .queue-info { flex: 1; }
+    .queue-info strong { font-family: 'Inter', sans-serif; font-size: 0.88rem; color: var(--text-primary); }
+    .queue-info small { display: block; color: var(--text-secondary); margin-top: 3px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; }
+
+    /* ══════════════════════════════════════════════════════════
+       GEOSPATIAL OPERATIONAL MAP
+     ══════════════════════════════════════════════════════════ */
+    .map-frame-wrap {
+      border-radius: var(--radius-card); overflow: hidden;
+      border: 1px solid var(--border);
+      height: 520px;
+      position: relative;
+    }
+    .map-frame-wrap iframe { width: 100%; height: 100%; border: none; }
+    .map-loading {
+      position: absolute; inset: 0;
+      background: rgba(4, 7, 13, 0.92);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.88rem; color: var(--text-secondary);
+      backdrop-filter: blur(8px);
+      z-index: 10;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid rgba(255, 255, 255, 0.03);
+      border-top-color: var(--brand-amber);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 12px;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ══════════════════════════════════════════════════════════
+       MATPLOTLIB CHARTS CONTAINER
+     ══════════════════════════════════════════════════════════ */
+    .chart-img {
+      width: 100%; border-radius: var(--radius-card);
+      background: transparent;
+      border: none;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4));
+    }
+    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    /* ══════════════════════════════════════════════════════════
+       RESOURCE GLOWING METER BARS (SEGMENTED STRIPES)
+     ══════════════════════════════════════════════════════════ */
+    .res-item { margin-bottom: 16px; }
+    .res-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .res-name  { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 700; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; }
+    .res-nums  { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--text-secondary); }
+    .res-bar   { height: 10px; background: rgba(255, 255, 255, 0.02); border-radius: var(--radius-card); overflow: hidden; border: 1px solid rgba(255,255,255,0.04); position: relative; }
+    
+    .res-fill  {
+      height: 100%; border-radius: var(--radius-card);
+      background: repeating-linear-gradient(
+        -45deg,
+        var(--res-color),
+        var(--res-color) 8px,
+        var(--res-color2, var(--res-color)) 8px,
+        var(--res-color2, var(--res-color)) 16px
+      );
+      box-shadow: 0 0 12px var(--res-color);
+      transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       SHELTER CARDS
+     ══════════════════════════════════════════════════════════ */
+    .shelter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    
+    .shelter-card {
+      padding: 16px; border-radius: var(--radius-card);
+      background: rgba(15, 23, 42, 0.45);
+      border: 1px solid var(--border);
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .shelter-card::before {
+      content: '';
+      position: absolute; top: -1px; left: -1px;
+      width: 6px; height: 6px;
+      border-top: 1.5px solid var(--brand-emerald);
+      border-left: 1.5px solid var(--brand-emerald);
+      border-top-left-radius: var(--radius-card);
+      pointer-events: none;
+    }
+    
+    .shelter-card:hover { border-color: var(--brand-emerald); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.15); }
+    .shelter-name { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 0.88rem; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.02em; }
+    .shelter-cap { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 8px; }
+    .occ-bar { height: 6px; background: rgba(255, 255, 255, 0.02); border-radius: var(--radius-card); overflow: hidden; margin-top: 6px; border: 1px solid rgba(255,255,255,0.03); }
+    .occ-fill { height: 100%; border-radius: var(--radius-card); transition: width 1s ease; box-shadow: 0 0 8px var(--occ-color, var(--brand-indigo)); }
+
+    /* ══════════════════════════════════════════════════════════
+       ROUTE PLANNING STEPS
+     ══════════════════════════════════════════════════════════ */
+    .route-path {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+      padding: 16px; background: rgba(245, 158, 11, 0.02);
+      border: 1px solid rgba(245, 158, 11, 0.15);
+      border-radius: var(--radius-card); margin-top: 14px;
+    }
+    
+    .route-node {
+      padding: 6px 12px; border-radius: var(--radius-card);
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.22);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem; color: #ffddb8;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    
+    .route-arrow { color: var(--text-muted); font-size: 0.95rem; display: flex; align-items: center; }
+    .arrow-icon-svg { width: 14px; height: 14px; color: var(--text-muted); }
+
+    /* ══════════════════════════════════════════════════════════
+       TABLE OVERLAYS
+     ══════════════════════════════════════════════════════════ */
+    .alloc-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .alloc-table th {
+      text-align: left; padding: 12px 14px;
+      color: var(--text-secondary); font-weight: 700;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em;
+      background: rgba(0, 0, 0, 0.15);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    .alloc-table td { padding: 12px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.02); }
+    .alloc-table tr:hover td { background: rgba(245, 158, 11, 0.04); }
+
+    /* ══════════════════════════════════════════════════════════
+       TOAST ALERTS SYSTEM
+     ══════════════════════════════════════════════════════════ */
+    #toast-container {
+      position: fixed; top: 80px; right: 24px;
+      display: flex; flex-direction: column; gap: 8px;
+      z-index: 9999;
+    }
+    
+    .toast {
+      min-width: 300px; max-width: 380px;
+      padding: 14px 20px;
+      background: rgba(5, 9, 18, 0.95);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--brand-indigo);
+      border-radius: var(--radius-card);
+      backdrop-filter: blur(15px);
+      font-size: 0.85rem;
+      animation: toast-in 0.35s cubic-bezier(0.16, 1, 0.3, 1), toast-out 0.35s ease 3.8s forwards;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 15px rgba(245, 158, 11, 0.05);
+    }
+    
+    .toast.success { border-left-color: var(--brand-emerald); }
+    .toast.error   { border-left-color: var(--brand-rose); }
+    .toast.warning { border-left-color: var(--brand-amber); }
+    .toast-title   { font-family: 'JetBrains Mono', monospace; font-weight: 700; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.02em; }
+    
+    @keyframes toast-in  { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes toast-out { to { opacity: 0; transform: translateX(24px); } }
+
+    /* ══════════════════════════════════════════════════════════
+       SECTION HEADING WITH GLOWS
+     ══════════════════════════════════════════════════════════ */
+    .section-heading {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    
+    .section-heading h1 {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    
+    .section-heading p { font-size: 0.85rem; color: var(--text-secondary); margin-top: 3px; font-weight: 500; }
+    
+    .heading-icon {
+      width: 46px; height: 46px; border-radius: var(--radius-card);
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
+      flex-shrink: 0;
+    }
+    
+    .heading-icon-svg {
+      width: 22px; height: 22px;
+      color: #ffb95f;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       AFFECTED AREAS LISTS
+     ══════════════════════════════════════════════════════════ */
+    .mini-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .mini-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.02); }
+    .mini-table td:last-child { text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+    .mini-table tr:hover td { background: rgba(255, 255, 255, 0.01); }
+    .rank-num { color: var(--text-muted); font-size: 0.75rem; font-weight: 700; }
+
+    /* ══════════════════════════════════════════════════════════
+       TELEMETRY SYSTEM TICKER BANNER
+     ══════════════════════════════════════════════════════════ */
+    .ticker-bar {
+      height: 30px;
+      background: #020617;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      font-size: 0.72rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--brand-indigo);
+      z-index: 101;
+      position: relative;
+    }
+    .ticker-header {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: #020617;
+      padding: 0 16px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      z-index: 2;
+      box-shadow: 4px 0 10px rgba(0,0,0,0.5);
+    }
+    .ticker-scroll {
+      display: inline-flex;
+      white-space: nowrap;
+      animation: ticker 45s linear infinite;
+      padding-left: 20px;
+    }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-right: 40px;
+      color: var(--text-secondary);
+    }
+    .ticker-alert {
+      color: var(--brand-rose);
+      font-weight: 700;
+      text-shadow: 0 0 6px rgba(244, 63, 94, 0.3);
+    }
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Utilities map */
+    .mb-12 { margin-bottom: 12px; }
+    .mb-16 { margin-bottom: 16px; }
+    .mb-20 { margin-bottom: 20px; }
+    .mt-12 { margin-top: 12px; }
+    .mt-16 { margin-top: 16px; }
+    .text-cyan   { color: var(--accent-cyan); }
+    .text-green  { color: var(--brand-emerald); }
+    .text-gold   { color: var(--brand-amber); }
+    .text-red    { color: var(--brand-rose); }
+    .text-muted  { color: var(--text-secondary); }
+    .text-mono   { font-family: 'JetBrains Mono', monospace; }
+    .fw-700 { font-weight: 700; }
+    .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    .flex-gap8    { display: flex; gap: 8px; align-items: center; }
+    .loading-text { color: var(--text-secondary); font-size: 0.85rem; padding: 24px; text-align: center; }
+  </style>
+</head>
+<body>
+
+<!-- ─── SIDEBAR ───────────────────────────────────────── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-container">
+      <div class="logo-icon">
+        <i data-lucide="shield" class="logo-icon-svg"></i>
+      </div>
+      <div class="logo-text-wrap">
+        <div class="logo-text">DisasterOS</div>
+        <div class="logo-sub">Response Command</div>
+      </div>
+    </div>
+    <div class="status-pill"><div class="status-dot"></div>SYS ONLINE</div>
+  </div>
+
+  <div class="nav-scroll">
+    <div class="nav-section">
+      <div class="nav-label">Operations</div>
+      <div class="nav-item active" onclick="showSection('dashboard', this)" id="nav-dashboard">
+        <i data-lucide="layout-dashboard" class="nav-icon-svg"></i> Command Dashboard
+      </div>
+      <div class="nav-item" onclick="showSection('incidents', this)" id="nav-incidents">
+        <i data-lucide="alert-triangle" class="nav-icon-svg"></i> Incident Manager
+        <span class="nav-badge" id="active-badge">0</span>
+      </div>
+      <div class="nav-item" onclick="showSection('queue', this)" id="nav-queue">
+        <i data-lucide="clipboard-list" class="nav-icon-svg"></i> Dispatch Queue
+      </div>
+      <div class="nav-item" onclick="showSection('map', this)" id="nav-map">
+        <i data-lucide="map" class="nav-icon-svg"></i> Live Map
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Algorithms Engine</div>
+      <div class="nav-item" onclick="showSection('resources', this)" id="nav-resources">
+        <i data-lucide="package" class="nav-icon-svg"></i> Resource Allocation
+      </div>
+      <div class="nav-item" onclick="showSection('shelters', this)" id="nav-shelters">
+        <i data-lucide="hospital" class="nav-icon-svg"></i> Shelter Management
+      </div>
+      <div class="nav-item" onclick="showSection('routes', this)" id="nav-routes">
+        <i data-lucide="route" class="nav-icon-svg"></i> Rescue Routing
+      </div>
+      <div class="nav-item" onclick="showSection('analytics', this)" id="nav-analytics">
+        <i data-lucide="line-chart" class="nav-icon-svg"></i> Analytics
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-footer" id="sidebar-stats">
+    <div class="mini-stat">
+      <span class="mini-stat-label">Active Cases</span>
+      <span class="mini-stat-val text-red" id="sf-active">—</span>
+    </div>
+    <div class="mini-stat">
+      <span class="mini-stat-label">Affected Pop</span>
+      <span class="mini-stat-val text-gold" id="sf-pop">—</span>
+    </div>
+    <div class="mini-stat">
+      <span class="mini-stat-label">Stock Units</span>
+      <span class="mini-stat-val text-cyan" id="sf-res">—</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── MAIN CONTENT ─────────────────────────────────── -->
+<main class="main">
+  <!-- TELEMETRY ALERT TICKER -->
+  <div class="ticker-bar">
+    <div class="ticker-header">Telemetry</div>
+    <div class="ticker-scroll">
+      <span class="ticker-item ticker-alert">🚨 ALERT: SEVERE CYCLONE DAMAGE REPORTED AT PORT INDUSTRIAL AREA (32,000 AFFECTED)</span>
+      <span class="ticker-item ticker-alert">🚨 ALERT: FLOODING IN RIVERSIDE DISTRICT ENGAGING RESCUE CREWS (18,500 AFFECTED)</span>
+      <span class="ticker-item">📊 DEPOT FOOD INVENTORY STOCK: 120,000 UNITS FREE</span>
+      <span class="ticker-item">🏥 SHELTER EVACUATION VACANCY METRICS REPORTING STABLE CAPACITIES</span>
+      <span class="ticker-item">🚑 DIJKSTRA RESCUE ROUTING ENGINES ACTIVE AND RUNNING CALCULATIONS</span>
+      <!-- Duplicate for infinite effect -->
+      <span class="ticker-item ticker-alert">🚨 ALERT: SEVERE CYCLONE DAMAGE REPORTED AT PORT INDUSTRIAL AREA (32,000 AFFECTED)</span>
+      <span class="ticker-item ticker-alert">🚨 ALERT: FLOODING IN RIVERSIDE DISTRICT ENGAGING RESCUE CREWS (18,500 AFFECTED)</span>
+      <span class="ticker-item">📊 DEPOT FOOD INVENTORY STOCK: 120,000 UNITS FREE</span>
+    </div>
+  </div>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">
+      <i data-lucide="layout-dashboard" class="card-icon-svg"></i> Command Dashboard
+    </div>
+    <div class="alert-strip">
+      <i data-lucide="activity" style="width:13px;height:13px;stroke-width:2.5px;"></i> COMMAND NETWORK ACTIVE
+    </div>
+    <div class="topbar-time" id="topbar-clock">—</div>
+  </div>
+
+  <div class="content-area">
+
+    <!-- ──────────────────────── DASHBOARD ──────────────────── -->
+    <section class="section active" id="section-dashboard">
+      <div class="section-heading" style="display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div class="heading-icon">
+            <i data-lucide="layout-dashboard" class="heading-icon-svg"></i>
+          </div>
+          <div>
+            <h1>Command Dashboard</h1>
+            <p>Real-time overview of active emergency incidents, stockpiles, and shelter statuses</p>
+          </div>
+        </div>
+        <button class="btn btn-ghost" onclick="window.open('/api/report/pdf', '_blank')">
+          <i data-lucide="file-text" class="btn-svg"></i> Export PDF Report
+        </button>
+      </div>
+
+      <!-- Deficit Alert Banner (Section 14.3 of PDF) -->
+      <div id="deficit-alert-banner" class="alert-strip mb-20" style="display: none; align-items: center; gap: 12px; margin-bottom: 20px; border-color: var(--brand-rose); background: rgba(239, 68, 68, 0.08); padding: 12px 20px; border-radius: 4px;">
+        <i data-lucide="alert-octagon" style="color: var(--brand-rose); width: 20px; height: 20px;"></i>
+        <div id="deficit-alert-text" style="color: var(--text-primary); font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; font-weight: 600;">
+          WARNING: Stockpile deficit detected!
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid mb-20" id="kpi-grid">
+        <div class="kpi-card" style="--kpi-color:var(--brand-rose)">
+          <i data-lucide="alert-triangle" class="kpi-icon-svg"></i>
+          <div class="kpi-value" id="kpi-incidents">—</div>
+          <div class="kpi-label">Active Incidents</div>
+          <div class="kpi-sub" id="kpi-total">— total reported</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:var(--brand-amber)">
+          <i data-lucide="users" class="kpi-icon-svg"></i>
+          <div class="kpi-value" id="kpi-population">—</div>
+          <div class="kpi-label">People Affected</div>
+          <div class="kpi-sub">across active zones</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:var(--accent-cyan)">
+          <i data-lucide="package" class="kpi-icon-svg"></i>
+          <div class="kpi-value" id="kpi-resources">—</div>
+          <div class="kpi-label">Stockpile Units</div>
+          <div class="kpi-sub">remaining in depots</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:var(--brand-emerald)">
+          <i data-lucide="hospital" class="kpi-icon-svg"></i>
+          <div class="kpi-value" id="kpi-shelters">—</div>
+          <div class="kpi-label">Shelter Vacancy</div>
+          <div class="kpi-sub">available spots free</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Recent incidents -->
+        <div class="card">
+          <div class="card-header">
+            <i data-lucide="activity" class="card-icon-svg"></i>
+            <span class="card-title">Priority Incident Feed</span>
+            <span class="card-badge" style="background:rgba(244,63,94,0.1);color:var(--brand-rose);border:1px solid rgba(244,63,94,0.2)" id="dash-incident-count">—</span>
+          </div>
+          <div class="incident-list" id="dash-incident-list">
+            <div class="loading-text">Loading incidents…</div>
+          </div>
+        </div>
+
+        <!-- Resource summary + Shelter status -->
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div class="card">
+            <div class="card-header">
+              <i data-lucide="package" class="card-icon-svg"></i>
+              <span class="card-title">Depot Stockpile Allocation</span>
+              <button class="btn btn-primary" style="font-size:0.75rem;padding:6px 12px;margin-left:auto;" onclick="doAllocate()">
+                <i data-lucide="zap" class="btn-svg"></i> Auto-Allocate
+              </button>
+            </div>
+            <div id="inventory-bars">
+              <div class="loading-text">Loading stockpiles…</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <i data-lucide="hospital" class="card-icon-svg"></i>
+              <span class="card-title">Shelter Evacuation Capacities</span>
+            </div>
+            <div class="shelter-grid" id="dash-shelter-grid">
+              <div class="loading-text">Loading shelters…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────────────────────── INCIDENTS ──────────────────── -->
+    <section class="section" id="section-incidents">
+      <div class="section-heading">
+        <div class="heading-icon">
+          <i data-lucide="alert-triangle" class="heading-icon-svg"></i>
+        </div>
+        <div>
+          <h1>Incident Manager</h1>
+          <p>Register incoming crisis alerts, score priority, and track triage progress</p>
+        </div>
+      </div>
+
+      <div class="grid-2-1">
+        <div class="card">
+          <div class="card-header">
+            <i data-lucide="radio" class="card-icon-svg"></i>
+            <span class="card-title">All Incident Feeds</span>
+            <span class="card-badge" style="background:rgba(99,102,241,0.1);color:var(--brand-indigo);border:1px solid rgba(99,102,241,0.2)" id="all-incident-count">—</span>
+          </div>
+          <div class="incident-list" id="all-incident-list">
+            <div class="loading-text">Loading incidents…</div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div class="card">
+            <div class="card-header">
+              <i data-lucide="file-text" class="card-icon-svg"></i>
+              <span class="card-title">Register Incident Form</span>
+            </div>
+            <form id="incident-form" onsubmit="submitIncident(event)">
+              <div class="form-group">
+                <label class="form-label">Affected Location</label>
+                <select class="form-control" id="inc-location" required>
+                  <option value="">Select location…</option>
+                </select>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label">Disaster Type</label>
+                  <select class="form-control" id="inc-type" required>
+                    <option value="">Type…</option>
+                    <option>Flood</option><option>Earthquake</option>
+                    <option>Cyclone</option><option>Wildfire</option>
+                    <option>Landslide</option><option>Tsunami</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Severity Level <span style="font-size:0.65rem;color:var(--text-muted)">*(Auto)*</span></label>
+                  <select class="form-control" id="inc-severity" disabled style="opacity: 0.85; cursor: not-allowed; background: rgba(0,0,0,0.15)" required>
+                    <option value="">Severity</option>
+                    <option>Low</option><option>Medium</option>
+                    <option>High</option><option>Critical</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Population Affected</label>
+                <input type="number" class="form-control" id="inc-population" min="1" max="1000000" placeholder="e.g. 5000" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Incident Description</label>
+                <input type="text" class="form-control" id="inc-description" placeholder="Brief situation details…" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Reporter / Reporting Agency</label>
+                <input type="text" class="form-control" id="inc-reporter" placeholder="e.g. Field Unit Alpha" />
+              </div>
+              <button type="submit" class="btn btn-danger" style="width:100%">
+                <i data-lucide="alert-circle" class="btn-svg"></i> Report Crisis Incident
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────────────────────── QUEUE ──────────────────────── -->
+    <section class="section" id="section-queue">
+      <div class="section-heading">
+        <div class="heading-icon">
+          <i data-lucide="clipboard-list" class="heading-icon-svg"></i>
+        </div>
+        <div>
+          <h1>Dispatch Queue</h1>
+          <p>FIFO dispatch queue — coordinate and process incidents sequentially in order of arrival</p>
+        </div>
+      </div>
+
+      <div class="grid-2-1">
+        <div class="card">
+          <div class="card-header">
+            <i data-lucide="binary" class="card-icon-svg"></i>
+            <span class="card-title">FIFO Dispatch Queue Status</span>
+            <span class="card-badge" style="background:rgba(245,158,11,0.08);color:var(--brand-amber);border:1px solid rgba(245,158,11,0.2)" id="queue-count">—</span>
+            <button class="btn btn-warning" style="margin-left:auto;font-size:0.75rem;padding:6px 12px;" onclick="dequeue()">
+              <i data-lucide="send" class="btn-svg"></i> Dispatch Next
+            </button>
+          </div>
+          <div class="queue-wrap" id="queue-list">
+            <div class="loading-text">Loading queue…</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <i data-lucide="send" class="card-icon-svg"></i>
+            <span class="card-title">Last Case Dispatched</span>
+          </div>
+          <div id="last-dispatched">
+            <div class="loading-text" style="text-align:left">Press "Dispatch Next" to coordinate the first queued incident.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────────────────────── MAP ─────────────────────────── -->
+    <section class="section" id="section-map">
+      <div class="section-heading">
+        <div class="heading-icon">
+          <i data-lucide="map" class="heading-icon-svg"></i>
+        </div>
+        <div>
+          <h1>Situation Map</h1>
+          <p>Interactive visualization of depots, shelters, active incidents, and calculated routes</p>
+        </div>
+      </div>
+
+      <div class="card mb-16">
+        <div class="card-header">
+          <i data-lucide="map" class="card-icon-svg"></i>
+          <span class="card-title">Geospatial Operational Map</span>
+          <button class="btn btn-ghost" style="margin-left:auto;font-size:0.75rem;padding:6px 12px;" onclick="loadMap()">
+            <i data-lucide="refresh-cw" class="btn-svg"></i> Refresh Map
+          </button>
+        </div>
+        <div class="map-frame-wrap" id="map-wrap">
+          <div class="map-loading" id="map-loading">
+            <div class="spinner"></div> Updating geospatial markers…
+          </div>
+          <iframe id="map-iframe" src="" title="Situation Map Layout" style="opacity:0;transition:opacity 0.4s ease;"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────────────────────── RESOURCES ──────────────────── -->
+    <section class="section" id="section-resources">
+      <div class="section-heading">
+        <div class="heading-icon">
+          <i data-lucide="package" class="heading-icon-svg"></i>
+        </div>
+        <div>
+          <h1>Resource Allocation</h1>
+          <p>Greedy resource allocator — satisfies critical needs proportionally based on severity triage</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header" style="display:flex; align-items:center;">
+            <i data-lucide="package" class="card-icon-svg"></i>
+            <span class="card-title">Depot Supplies Stockpile</span>
+            <div style="margin-left:auto; display:flex; align-items:center;">
+              <select id="alloc-strategy" class="form-control" style="width:160px; font-size:0.72rem; padding:5px; margin-right:10px; height:32px; background:var(--bg-deep); color:var(--text-primary); border:1px solid rgba(255,255,255,0.1); border-radius:4px;">
+                <option value="greedy">Greedy Allocator</option>
+                <option value="knapsack">DP Knapsack Allocator</option>
+              </select>
+              <button class="btn btn-primary" style="height:32px; padding:0 12px; font-size:0.72rem;" onclick="doAllocate()">
+                <i data-lucide="zap" class="btn-svg"></i> Run Allocation
+              </button>
+            </div>
+          </div>
+          <div id="resource-bars-full">
+            <div class="loading-text">Loading stockpiles…</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <i data-lucide="line-chart" class="card-icon-svg"></i>
+            <span class="card-title">Resource Allocation History Log</span>
+            <span class="card-badge" style="background:rgba(99,102,241,0.1);color:var(--brand-indigo);border:1px solid rgba(99,102,241,0.2)" id="alloc-log-count">—</span>
+          </div>
+          <div style="overflow-x:auto;" id="alloc-log-wrap">
+            <div class="loading-text">Trigger resource allocation to print logs.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────────────────────── SHELTERS ───────────────────── -->
+    <section class="section" id="section-shelters">
+      <div class="section-heading">
+        <div class="heading-icon">
+          <i data-lucide="hospital" class="heading-icon-svg"></i>
+        </div>
+        <div>
+          <h1>Shelter Management</h1>
+          <p>BFS nearest shelter finder — exploring topological nodes to recommend nearest vacancy shelters</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <i data-lucide="hospital" class="card-icon-svg"></i>
+            <span class="card-title">Evacuation Shelter Registry</span>
+          </div>
+          <div class="shelter-grid" id="shelters-full-grid">
+            <div class="loading-text">Loading shelters data…</div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div class="card">
+            <div class="card-header">
+              <i data-lucide="search" class="card-icon-svg"></i>
+              <span class="card-title">Find Nearest Shelter (BFS Search)</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Incident ID</label>
+              <select class="form-control" id="shelter-incident-select">
+                <option value="">Select active incident…</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Max Recommendations Limit</label>
+              <select class="form-control" id="shelter-max">
+                <option value="3">3 Shelters</option><option value="4" selected>4 Shelters</option><option value="5">5 Shelters</option>
+              </select>
+            </div>
+            <button class="btn btn-success" style="width:100%" onclick="findShelters()">
+              <i data-lucide="search" class="btn-svg"></i> Run BFS Nearest Shelter Finder
+            </button>
+            <div id="shelter-results" class="mt-12"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────────────────────── ROUTES ─────────────────────── -->
+    <section class="section" id="section-routes">
+      <div class="section-heading">
+        <div class="heading-icon">
+          <i data-lucide="route" class="heading-icon-svg"></i>
+        </div>
+        <div>
+          <h1>Rescue Route Planner</h1>
+          <p>Dijkstra route planning — resolves optimal route based on distance and composite risk factor weights</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <i data-lucide="compass" class="card-icon-svg"></i>
+            <span class="card-title">Calculate Route</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Source Node (Staging / Depot)</label>
+            <select class="form-control" id="route-source">
+              <option value="">Select source location…</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Target Node (Incident / Shelter)</label>
+            <select class="form-control" id="route-target">
+              <option value="">Select target location…</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" style="width:100%;margin-bottom:12px" onclick="planRoute()">
+            <i data-lucide="navigation" class="btn-svg"></i> Calculate Rescue Path via Dijkstra
+          </button>
+          <div id="route-result"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <i data-lucide="map" class="card-icon-svg"></i>
+            <span class="card-title">Calculated Route Map Layout</span>
+          </div>
+          <div class="map-frame-wrap" id="route-map-wrap" style="height:380px">
+            <div class="map-loading" id="route-map-loading" style="display:flex">
+              <span style="color:var(--text-secondary);font-size:0.85rem">Plan a route to display Dijkstra path overlay on map.</span>
+            </div>
+            <iframe id="route-map-iframe" src="" title="Route Map" style="opacity:0;transition:opacity 0.4s;"></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────────────────────── ANALYTICS ──────────────────── -->
+    <section class="section" id="section-analytics">
+      <div class="section-heading">
+        <div class="heading-icon">
+          <i data-lucide="line-chart" class="heading-icon-svg"></i>
+        </div>
+        <div>
+          <h1>Analytics Dashboard</h1>
+          <p>Pandas & NumPy data summaries and Matplotlib visualization charts</p>
+        </div>
+      </div>
+
+      <div class="charts-grid mb-16" id="charts-grid">
+        <div class="card">
+          <div class="card-header">
+            <i data-lucide="users" class="card-icon-svg"></i>
+            <span class="card-title">Population Impact Overview</span>
+          </div>
+          <div class="loading-text">Loading chart…</div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <i data-lucide="wind" class="card-icon-svg"></i>
+            <span class="card-title">Disaster Types Breakdown</span>
+          </div>
+          <div class="loading-text">Loading chart…</div>
+        </div>
+        <div class="card" style="grid-column:span 2">
+          <div class="card-header">
+            <i data-lucide="line-chart" class="card-icon-svg"></i>
+            <span class="card-title">Global Depot Resource Stock Utilization</span>
+          </div>
+          <div class="loading-text">Loading chart…</div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <i data-lucide="alert-circle" class="card-icon-svg"></i>
+            <span class="card-title">Incident Severity Distribution</span>
+          </div>
+          <div class="loading-text">Loading chart…</div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <i data-lucide="list-todo" class="card-icon-svg"></i>
+            <span class="card-title">Highly Impacted Regions</span>
+          </div>
+          <div id="affected-table-wrap">
+            <div class="loading-text">Loading stats…</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /content-area -->
+</main>
+
+<!-- ── TOAST CONTAINER ───────────────────────────────── -->
+<div id="toast-container"></div>
+
+<!-- ══════════════════════════════════════════════════════════
+     JAVASCRIPT ENGINE
+ ══════════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+const API = '';
+let cachedIncidents = [];
+let cachedNodes     = [];
+let cachedShelters  = [];
+let cachedInventory = {};
+let cachedAnalytics = {};
+let chartInstances = {};
+
+// ── Toast System ─────────────────────────────────────────
+function toast(title, message='', type='info') {
+  const tc = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<div class="toast-title">${title}</div>${message ? `<div style="color:var(--text-secondary);margin-top:3px">${message}</div>` : ''}`;
+  tc.appendChild(el);
+  setTimeout(() => el.remove(), 4200);
+}
+
+// ── Clock ─────────────────────────────────────────────────
+function updateClock() {
+  document.getElementById('topbar-clock').textContent = new Date().toLocaleTimeString('en-IN', {hour12:false});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── Section Navigation ────────────────────────────────────
+const sectionTitles = {
+  dashboard: 'Command Dashboard',
+  incidents: 'Incident Manager',
+  queue:     'Dispatch Queue',
+  map:       'Live Situation Map',
+  resources: 'Resource Allocation',
+  shelters:  'Shelter Management',
+  routes:    'Rescue Route Planner',
+  analytics: 'Analytics Dashboard',
+};
+const sectionIcons = {
+  dashboard: 'layout-dashboard',
+  incidents: 'alert-triangle',
+  queue:     'clipboard-list',
+  map:       'map',
+  resources: 'package',
+  shelters:  'hospital',
+  routes:    'route',
+  analytics: 'line-chart',
+};
+
+function showSection(id, navEl) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  navEl.classList.add('active');
+  
+  // Update topbar title with matching Lucide icon
+  const iconName = sectionIcons[id] || 'layout-dashboard';
+  document.getElementById('topbar-title').innerHTML = 
+    `<i data-lucide="${iconName}" class="card-icon-svg" style="width:20px;height:20px;margin-right:8px;"></i> ${sectionTitles[id] || id}`;
+  
+  lucide.createIcons();
+  
+  if (id === 'map')       loadMap();
+  if (id === 'analytics') loadCharts();
+  if (id === 'queue')     loadQueue();
+}
+
+// ── Fetch helpers ─────────────────────────────────────────
+async function apiFetch(path, opts={}) {
+  const r = await fetch(API + path, opts);
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({detail: r.statusText}));
+    throw new Error(err.detail || 'API error');
+  }
+  return r.json();
+}
+
+// ── Severity helpers ─────────────────────────────────────
+const SEV_COLORS = {Low:'var(--sev-low)',Medium:'var(--sev-medium)',High:'var(--sev-high)',Critical:'var(--sev-critical)'};
+function sevBadge(s) { return `<span class="sev-badge sev-${s}">${s}</span>`; }
+function statusBadge(s) { return `<span class="status-badge status-${s}">${s}</span>`; }
+function fmtPop(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1)+'M';
+  if (n >= 1000)    return (n/1000).toFixed(1)+'K';
+  return n.toString();
+}
+
+// ── LOAD ALL DATA ─────────────────────────────────────────
+async function loadAll() {
+  try {
+    const [incidents, nodes, shelters, inventory, analytics] = await Promise.all([
+      apiFetch('/api/incidents'),
+      apiFetch('/api/nodes'),
+      apiFetch('/api/shelters'),
+      apiFetch('/api/inventory'),
+      apiFetch('/api/analytics'),
+    ]);
+    cachedIncidents = incidents;
+    cachedNodes     = nodes;
+    cachedShelters  = shelters;
+    cachedInventory = inventory;
+    cachedAnalytics = analytics;
+    renderAll();
+  } catch(e) {
+    toast('Load Error', e.message, 'error');
+  }
+}
+
+function renderAll() {
+  renderKPIs();
+  renderDashIncidents();
+  renderInventoryBars('inventory-bars');
+  renderInventoryBars('resource-bars-full');
+  renderDashShelters();
+  renderAllIncidents();
+  populateNodeSelects();
+  renderSheltersFull();
+  updateSidebarStats();
+  updateActiveBadge();
+  lucide.createIcons(); // Ensure newly rendered SVG elements are parsed by Lucide
+
+  // Update charts if currently viewing analytics tab
+  const activeSection = document.getElementById('section-analytics');
+  if (activeSection && activeSection.classList.contains('active')) {
+    loadCharts();
+  }
+}
+
+// ── KPIs ──────────────────────────────────────────────────
+function renderKPIs() {
+  const a = cachedAnalytics;
+  document.getElementById('kpi-incidents').textContent  = a.active_incidents ?? '—';
+  document.getElementById('kpi-total').textContent      = `${a.total_incidents ?? 0} total reported`;
+  const pop = a.total_population ?? 0;
+  document.getElementById('kpi-population').textContent = fmtPop(pop);
+  const inv = cachedInventory;
+  const res = (inv.food||0)+(inv.water||0)+(inv.medical_kits||0)+(inv.rescue_teams||0);
+  document.getElementById('kpi-resources').textContent  = res.toLocaleString();
+  const freeCap = cachedShelters.reduce((s,sh) => s+sh.available_capacity, 0);
+  document.getElementById('kpi-shelters').textContent   = freeCap.toLocaleString();
+}
+
+// ── Inventory Bars ────────────────────────────────────────
+const RES_DEFS = [
+  {key:'food',         label:'Food Supplies',   orig:120000, col:'var(--accent-cyan)',   col2:'#0088cc'},
+  {key:'water',        label:'Drinking Water (L)', orig:200000, col:'var(--brand-emerald)', col2:'#009944'},
+  {key:'medical_kits', label:'Medical Kits',     orig:2000,   col:'var(--brand-rose)',     col2:'#aa2200'},
+  {key:'rescue_teams', label:'Rescue Teams',     orig:50,     col:'var(--brand-amber)',    col2:'#cc8800'},
+];
+function renderInventoryBars(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const inv = cachedInventory;
+  el.innerHTML = RES_DEFS.map(r => {
+    const val  = inv[r.key] ?? 0;
+    const pct  = Math.min(100, (val/r.orig)*100);
+    const used = r.orig - val;
+    return `<div class="res-item">
+      <div class="res-header">
+        <span class="res-name">${r.label}</span>
+        <span class="res-nums">${val.toLocaleString()} / ${r.orig.toLocaleString()} left</span>
+      </div>
+      <div class="res-bar">
+        <div class="res-fill" style="width:${pct}%;--res-color:${r.col};--res-color2:${r.col2}"></div>
+      </div>
+      <div style="margin-top:4px;font-size:0.68rem;color:var(--text-muted)">${used.toLocaleString()} deployed units</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Incidents ─────────────────────────────────────────────
+function incidentRowHTML(inc, compact=true) {
+  const node  = cachedNodes.find(n => n.node_id === inc.location_id);
+  const loc   = node ? node.name : inc.location_id;
+  const svc   = SEV_COLORS[inc.severity] || 'var(--text-muted)';
+  return `<div class="incident-row ${inc.status==='Resolved'?'resolved':''}"
+    style="--sev-color:${svc}"
+    onclick="incidentDetail('${inc.incident_id}')">
+    <div>
+      <div class="incident-id">${inc.incident_id}</div>
+      <div class="incident-type">${inc.disaster_type}</div>
+      <div class="incident-loc">
+        <i data-lucide="map-pin" class="row-icon-svg"></i> ${loc}
+      </div>
+    </div>
+    <div style="margin-left:auto;text-align:right;display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+      ${sevBadge(inc.severity)}
+      ${statusBadge(inc.status)}
+      <span class="incident-pop" style="color:${svc}">${fmtPop(inc.population_affected)} affected</span>
+    </div>
+    ${inc.status==='Active' ? `
+      <button class="btn btn-ghost" style="font-size:0.7rem;padding:6px 12px;margin-left:12px;flex-shrink:0" onclick="event.stopPropagation();resolveInc('${inc.incident_id}')">
+        <i data-lucide="check-circle" class="btn-svg" style="color:var(--brand-emerald)"></i> Resolve
+      </button>` : ''}
+  </div>`;
+}
+
+function renderDashIncidents() {
+  const active = cachedIncidents.filter(i => i.status === 'Active' || i.status === 'Reported').slice(0,5);
+  const el = document.getElementById('dash-incident-list');
+  document.getElementById('dash-incident-count').textContent = active.length;
+  el.innerHTML = active.length ? active.map(i => incidentRowHTML(i)).join('') : '<div class="loading-text">No active incidents pending triage.</div>';
+}
+
+function renderAllIncidents() {
+  const el = document.getElementById('all-incident-list');
+  document.getElementById('all-incident-count').textContent = cachedIncidents.length;
+  el.innerHTML = cachedIncidents.length
+    ? cachedIncidents.map(i => incidentRowHTML(i)).join('')
+    : '<div class="loading-text">No incidents reported.</div>';
+}
+
+function incidentDetail(id) {
+  toast('Incident '+id, 'Use Shelter/Route tabs to plan response options.', 'info');
+}
+
+async function resolveInc(id) {
+  try {
+    await fetch(`${API}/api/incidents/${id}/resolve`, {method:'PATCH'});
+    toast('Incident Resolved', id+' marked as resolved.', 'success');
+    await loadAll();
+  } catch(e) { toast('Error', e.message, 'error'); }
+}
+
+// ── Populate selects ──────────────────────────────────────
+function populateNodeSelects() {
+  const zones     = cachedNodes.filter(n => n.loc_type === 'Affected Zone' || n.loc_type === 'HQ' || n.loc_type === 'Depot');
+  const allNodes  = cachedNodes;
+
+  ['inc-location'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const cur = el.value;
+    el.innerHTML = '<option value="">Select location…</option>' +
+      zones.map(n => `<option value="${n.node_id}">${n.name}</option>`).join('');
+    if (cur) el.value = cur;
+  });
+
+  ['route-source','route-target'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const cur = el.value;
+    el.innerHTML = '<option value="">Select node…</option>' +
+      allNodes.map(n => `<option value="${n.node_id}">[${n.loc_type}] ${n.name}</option>`).join('');
+    if (cur) el.value = cur;
+  });
+
+  const ssi = document.getElementById('shelter-incident-select');
+  if (ssi) {
+    const active = cachedIncidents.filter(i => i.status === 'Active' || i.status === 'Reported');
+    ssi.innerHTML = '<option value="">Select incident…</option>' +
+      active.map(i => `<option value="${i.incident_id}">${i.incident_id} — ${i.disaster_type} (${i.severity})</option>`).join('');
+  }
+}
+
+// ── Submit Incident ────────────────────────────────────────
+async function submitIncident(e) {
+  e.preventDefault();
+  const pop = parseInt(document.getElementById('inc-population').value);
+  if (isNaN(pop) || pop < 1) { toast('Validation', 'Population must be at least 1.', 'warning'); return; }
+  try {
+    const body = {
+      location_id:         document.getElementById('inc-location').value,
+      disaster_type:       document.getElementById('inc-type').value,
+      severity:            document.getElementById('inc-severity').value,
+      population_affected: pop,
+      description:         document.getElementById('inc-description').value,
+      reporter:            document.getElementById('inc-reporter').value || 'Anonymous',
+    };
+    const inc = await apiFetch('/api/incidents', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body),
+    });
+    toast('🚨 Incident Reported', `${inc.incident_id} — ${inc.disaster_type} — ${inc.severity}`, 'error');
+    document.getElementById('incident-form').reset();
+    updateWebSeverity();
+    await loadAll();
+  } catch(e) { toast('Error', e.message, 'error'); }
+}
+
+// ── Dashboard Shelters ────────────────────────────────────
+function shelterCardHTML(sh) {
+  const pct = sh.occupancy_pct;
+  const col = pct > 85 ? 'var(--brand-rose)' : pct > 60 ? 'var(--brand-amber)' : 'var(--brand-emerald)';
+  return `<div class="shelter-card">
+    <div class="shelter-name">${sh.name.split(' ').slice(0,3).join(' ')}</div>
+    <div class="shelter-cap">Cap: ${sh.capacity.toLocaleString()} | Free: <span style="color:var(--brand-emerald)">${sh.available_capacity.toLocaleString()}</span></div>
+    <div style="font-size:0.72rem;color:var(--text-secondary)">Occupancy</div>
+    <div class="occ-bar"><div class="occ-fill" style="width:${pct}%;background:${col}"></div></div>
+    <div style="font-size:0.7rem;color:${col};margin-top:4px;font-weight:600">${pct.toFixed(1)}% full</div>
+  </div>`;
+}
+
+function renderDashShelters() {
+  const el = document.getElementById('dash-shelter-grid');
+  if (!el) return;
+  el.innerHTML = cachedShelters.length
+    ? cachedShelters.map(shelterCardHTML).join('')
+    : '<div class="loading-text">No shelters loaded.</div>';
+}
+
+function renderSheltersFull() {
+  const el = document.getElementById('shelters-full-grid');
+  if (!el) return;
+  el.innerHTML = cachedShelters.length
+    ? cachedShelters.map(sh => {
+        const pct = sh.occupancy_pct;
+        const col = pct > 85 ? 'var(--brand-rose)' : pct > 60 ? 'var(--brand-amber)' : 'var(--brand-emerald)';
+        return `<div class="shelter-card">
+          <div class="shelter-name">${sh.name}</div>
+          <div class="shelter-cap">ID: ${sh.shelter_id}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:0.75rem;color:var(--text-secondary);margin:6px 0">
+            <div>Capacity: <b style="color:var(--text-primary)">${sh.capacity.toLocaleString()}</b></div>
+            <div>Occupied: <b style="color:var(--brand-amber)">${sh.occupancy.toLocaleString()}</b></div>
+            <div>Vacancy: <b style="color:var(--brand-emerald)">${sh.available_capacity.toLocaleString()}</b></div>
+            <div>Fill Level: <b style="color:${col}">${pct.toFixed(1)}%</b></div>
+          </div>
+          <div style="font-size:0.7rem;color:var(--text-muted);margin:8px 0 4px;font-weight:600">Shelter Supplies</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:0.72rem;color:var(--text-secondary)">
+            <div>🍱 Food: ${sh.supplies.food}</div>
+            <div>💧 Water: ${sh.supplies.water}</div>
+            <div>💊 Medical: ${sh.supplies.medical_kits}</div>
+            <div>🚒 Teams: ${sh.supplies.rescue_teams}</div>
+          </div>
+          <div class="occ-bar" style="margin-top:8px"><div class="occ-fill" style="width:${pct}%;background:${col}"></div></div>
+        </div>`;
+      }).join('')
+    : '<div class="loading-text">No shelters.</div>';
+}
+
+// ── Sidebar Stats ─────────────────────────────────────────
+function updateSidebarStats() {
+  const a = cachedAnalytics;
+  document.getElementById('sf-active').textContent = a.active_incidents ?? '—';
+  const pop = a.total_population;
+  document.getElementById('sf-pop').textContent = pop ? fmtPop(pop) : '—';
+  const inv = cachedInventory;
+  const res = (inv.food||0)+(inv.water||0)+(inv.medical_kits||0)+(inv.rescue_teams||0);
+  document.getElementById('sf-res').textContent = res > 0 ? res.toLocaleString() : '—';
+}
+
+function updateActiveBadge() {
+  const a = cachedAnalytics;
+  document.getElementById('active-badge').textContent = a.active_incidents ?? 0;
+}
+
+// ── GREEDY ALLOCATION ─────────────────────────────────────
+async function doAllocate() {
+  try {
+    const strat = document.getElementById('alloc-strategy').value;
+    const result = await apiFetch('/api/allocate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ strategy: strat })
+    });
+    cachedInventory = result.remaining;
+    await loadAll();
+    // Render allocation log
+    const log = result.allocation_log;
+    document.getElementById('alloc-log-count').textContent = log.length;
+    const wrap = document.getElementById('alloc-log-wrap');
+    if (!log.length) { wrap.innerHTML = '<div class="loading-text">All active incidents have already been allocated stockpiles.</div>'; return; }
+    wrap.innerHTML = `<table class="alloc-table">
+      <thead><tr>
+        <th>Incident ID</th><th>Location Zone</th><th>Severity</th><th>Priority Score</th>
+        <th>Food</th><th>Water</th><th>Meds</th><th>Teams</th>
+        <th>Deficits</th>
+      </tr></thead>
+      <tbody>${log.map(r => {
+        const d = r.deficit || {food:0, water:0, medical_kits:0, rescue_teams:0};
+        const hasDeficit = d.food > 0 || d.water > 0 || d.medical_kits > 0 || d.rescue_teams > 0;
+        const deficitText = hasDeficit ? 
+          `<span style="color:var(--brand-rose);font-weight:600">F:${d.food} W:${d.water} M:${d.medical_kits} T:${d.rescue_teams}</span>` : 
+          `<span style="color:var(--brand-emerald);font-weight:600">✓ FULL</span>`;
+        return `<tr>
+          <td class="text-mono" style="color:var(--brand-indigo);font-weight:600">${r.incident_id}</td>
+          <td>${r.location}</td>
+          <td>${sevBadge(r.severity)}</td>
+          <td class="text-mono" style="color:var(--brand-amber);font-weight:600">${r.priority_index}</td>
+          <td class="text-mono">${r.allocated.food.toLocaleString()}</td>
+          <td class="text-mono">${r.allocated.water.toLocaleString()}</td>
+          <td class="text-mono">${r.allocated.medical_kits.toLocaleString()}</td>
+          <td class="text-mono">${r.allocated.rescue_teams.toLocaleString()}</td>
+          <td class="text-mono">${deficitText}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+    
+    // Check if any stockpile deficit exists and display/hide warning banner
+    let anyDeficit = false;
+    let deficitDetails = [];
+    log.forEach(r => {
+      const d = r.deficit || {food:0, water:0, medical_kits:0, rescue_teams:0};
+      if (d.food > 0 || d.water > 0 || d.medical_kits > 0 || d.rescue_teams > 0) {
+        anyDeficit = true;
+        deficitDetails.push(`${r.incident_id}: F:${d.food} W:${d.water} M:${d.medical_kits} T:${d.rescue_teams}`);
+      }
+    });
+    
+    const banner = document.getElementById('deficit-alert-banner');
+    if (anyDeficit) {
+      banner.style.display = 'flex';
+      document.getElementById('deficit-alert-text').textContent = `WARNING: Stockpile deficit detected! ${deficitDetails.join(' | ')}`;
+    } else {
+      banner.style.display = 'none';
+    }
+
+    toast('✅ Dispatch Allocation Complete', `${log.length} incidents processed via ${strat.toUpperCase()} allocation.`, 'success');
+  } catch(e) { toast('Error', e.message, 'error'); }
+}
+
+// ── BFS SHELTER RECOMMENDATION ────────────────────────────
+async function findShelters() {
+  const incId  = document.getElementById('shelter-incident-select').value;
+  const maxR   = document.getElementById('shelter-max').value;
+  if (!incId) { toast('Select Incident', 'Please choose an incident first.', 'warning'); return; }
+  try {
+    const recs = await apiFetch('/api/shelters/recommend', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({incident_id: incId, max_results: parseInt(maxR)}),
+    });
+    const el = document.getElementById('shelter-results');
+    if (!recs.length) { el.innerHTML = '<div class="result-card danger"><b>No available shelters with vacancy found in the graph.</b></div>'; return; }
+    el.innerHTML = recs.map((r,i) => `
+      <div class="result-card success" style="margin-bottom:10px">
+        <div class="flex-between mb-12">
+          <b style="font-size:0.95rem;color:var(--text-primary)">${r.name}</b>
+          <span class="sev-badge" style="background:rgba(16,185,129,0.06);color:var(--brand-emerald);border:1px solid rgba(16,185,129,0.2)">Nearest Option #${i+1}</span>
+        </div>
+        <div style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:8px">
+          🔗 network hops: <b>${r.bfs_hops}</b> &nbsp;|&nbsp;
+          📍 distance: <b>${r.distance_km} km</b> &nbsp;|&nbsp;
+          🏥 vacancy: <b style="color:var(--brand-emerald)">${r.available_capacity.toLocaleString()}</b> spots free (${r.occupancy_pct}% full)
+        </div>
+        <div class="route-path" style="padding:10px;margin-top:0">
+          ${r.path.map((p,pi) => `${pi>0?'<span class="route-arrow"><i data-lucide="arrow-right" class="arrow-icon-svg"></i></span>':''}<span class="route-node" style="font-size:0.75rem;padding:4px 10px">${p}</span>`).join('')}
+        </div>
+      </div>`).join('');
+    lucide.createIcons();
+    toast('🏥 BFS Triage Complete', `${recs.length} shelters resolved.`, 'success');
+  } catch(e) { toast('Error', e.message, 'error'); }
+}
+
+// ── DIJKSTRA ROUTE PLANNING ───────────────────────────────
+async function planRoute() {
+  const src = document.getElementById('route-source').value;
+  const tgt = document.getElementById('route-target').value;
+  if (!src || !tgt) { toast('Select Nodes', 'Please select both source and target.', 'warning'); return; }
+  if (src === tgt)  { toast('Same Node', 'Source and target cannot be the same.', 'warning'); return; }
+  try {
+    const result = await apiFetch('/api/route', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({source_id: src, target_id: tgt}),
+    });
+    if (result.error) { document.getElementById('route-result').innerHTML = `<div class="result-card danger"><b>${result.error}</b></div>`; return; }
+
+    let altHtml = '';
+    try {
+      const alts = await apiFetch('/api/route/alternatives', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ source_id: src, target_id: tgt }),
+      });
+      if (alts && alts.length > 0) {
+        altHtml = `<div style="margin-top:15px; border-top: 1px dashed rgba(255,255,255,0.06); padding-top:12px;">
+          <div class="fw-700 mb-6" style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-secondary)">
+            Alternative Safe Routes (Backtracking Search)
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            ${alts.slice(0, 3).map((alt, idx) => {
+              const isPrimary = alt.path_ids.join(',') === result.path_ids.join(',');
+              return `<div class="queue-item" style="padding:10px 12px; cursor:pointer; background:rgba(255,255,255,0.02); margin-bottom:0;" onclick="document.getElementById('route-map-iframe').src='/api/map?highlight=${alt.path_ids.join(',')}';">
+                <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:4px;">
+                  <div style="font-size:0.75rem; font-weight:600; color:var(--text-primary);">Route Option #${idx+1} ${isPrimary ? '<span style="color:var(--brand-emerald)">[Optimal]</span>' : ''}</div>
+                  <div class="text-mono" style="font-size:0.7rem; color:var(--brand-amber)">Risk: ${alt.total_risk} | ${alt.total_distance} km | ${alt.hops} hops</div>
+                </div>
+                <div style="font-size:0.7rem; color:var(--text-muted); font-family: 'JetBrains Mono', monospace; line-height: 1.2;">
+                  ${alt.path_names.join(' ➔ ')}
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+      }
+    } catch (err) { console.error("Could not load alternative routes:", err); }
+
+    document.getElementById('route-result').innerHTML = `
+      <div class="result-card">
+        <div class="flex-between mb-12">
+          <div><div style="font-size:0.72rem;color:var(--text-secondary)">Shortest Safe Path (Dijkstra)</div>
+            <div class="fw-700" style="font-size:0.95rem">${result.source} ➔ ${result.target}</div></div>
+          <div style="text-align:right">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:1.25rem;font-weight:700;color:var(--brand-indigo)">${result.total_cost} km</div>
+            <div style="font-size:0.72rem;color:var(--text-secondary)">${result.hops} route hops</div>
+          </div>
+        </div>
+        <div class="route-path">
+          ${result.path_names.map((n,i) => `${i>0?'<span class="route-arrow"><i data-lucide="arrow-right" class="arrow-icon-svg"></i></span>':''}<span class="route-node">${n}</span>`).join('')}
+        </div>
+        ${altHtml}
+        <div style="margin-top:10px;font-size:0.7rem;color:var(--text-muted)">Routing engine: Dijkstra's algorithm & recursive backtracking from scratch | Weight = Distance × Road condition × Flood risk × Time of day</div>
+      </div>`;
+    // Load route map
+    const pathStr = result.path_ids.join(',');
+    const mapWrap = document.getElementById('route-map-wrap');
+    const mapIframe = document.getElementById('route-map-iframe');
+    document.getElementById('route-map-loading').style.display = 'flex';
+    mapIframe.style.opacity = '0';
+    mapIframe.onload = () => { document.getElementById('route-map-loading').style.display='none'; mapIframe.style.opacity='1'; };
+    mapIframe.src = `/api/map?highlight=${pathStr}`;
+    lucide.createIcons();
+    toast('🚑 Route Calculated', `${result.hops} hops, ${result.total_cost} km resolved via Dijkstra.`, 'success');
+  } catch(e) { toast('Error', e.message, 'error'); }
+}
+
+// ── LIVE MAP ──────────────────────────────────────────────
+function loadMap() {
+  const wrap = document.getElementById('map-wrap');
+  const iframe = document.getElementById('map-iframe');
+  const loading = document.getElementById('map-loading');
+  loading.style.display = 'flex';
+  iframe.style.opacity = '0';
+  iframe.onload = () => { loading.style.display='none'; iframe.style.opacity='1'; };
+  iframe.src = `/api/map?t=${Date.now()}`;
+}
+
+// ── ANALYTICS CHARTS ──────────────────────────────────────
+async function loadCharts() {
+  try {
+    for (const key in chartInstances) {
+      if (chartInstances[key]) {
+        chartInstances[key].destroy();
+      }
+    }
+    chartInstances = {};
+
+    const grid = document.getElementById('charts-grid');
+    grid.innerHTML = `
+      <div class="card">
+        <div class="card-header">
+          <i data-lucide="users" class="card-icon-svg"></i>
+          <span class="card-title">Population Impact Overview</span>
+        </div>
+        <div class="chart-container" style="position:relative; height:220px; width:100%">
+          <canvas id="chart-population-impact"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <i data-lucide="wind" class="card-icon-svg"></i>
+          <span class="card-title">Disaster Types Breakdown</span>
+        </div>
+        <div class="chart-container" style="position:relative; height:220px; width:100%">
+          <canvas id="chart-disaster-types"></canvas>
+        </div>
+      </div>
+      <div class="card" style="grid-column:span 2">
+        <div class="card-header">
+          <i data-lucide="package" class="card-icon-svg"></i>
+          <span class="card-title">Global Depot Resource Stock Utilization</span>
+        </div>
+        <div class="chart-container" style="position:relative; height:240px; width:100%">
+          <canvas id="chart-resource-util"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <i data-lucide="alert-circle" class="card-icon-svg"></i>
+          <span class="card-title">Incident Severity Distribution</span>
+        </div>
+        <div class="chart-container" style="position:relative; height:220px; width:100%">
+          <canvas id="chart-severity-dist"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <i data-lucide="activity" class="card-icon-svg"></i>
+          <span class="card-title">Incident Timeline Surge</span>
+        </div>
+        <div class="chart-container" style="position:relative; height:220px; width:100%">
+          <canvas id="chart-incident-timeline"></canvas>
+        </div>
+      </div>
+      <div class="card" style="grid-column:span 2">
+        <div class="card-header">
+          <i data-lucide="list-todo" class="card-icon-svg"></i>
+          <span class="card-title">Highly Impacted Regions</span>
+        </div>
+        <div id="affected-table-wrap">
+          ${cachedAnalytics.most_affected ? `
+          <table class="mini-table">
+            <tbody>${cachedAnalytics.most_affected.map((z,i) => `
+              <tr>
+                <td><span class="rank-num">#${i+1}</span></td>
+                <td>${z.location_id}</td>
+                <td style="color:var(--brand-amber);font-weight:700">${z.population.toLocaleString()}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>` : '<div class="loading-text">No stats resolved yet.</div>'}
+        </div>
+      </div>`;
+
+    lucide.createIcons();
+
+    const chartFont = { family: 'Inter, sans-serif', size: 10 };
+    const chartGridColor = 'rgba(255, 255, 255, 0.04)';
+    const chartTextColor = '#ccddee';
+
+    // 1. Population Impact (Bar Chart)
+    const mostAffected = cachedAnalytics.most_affected || [];
+    const popLabels = mostAffected.map(z => z.location_id);
+    const popData = mostAffected.map(z => z.population);
+    const ctx1 = document.getElementById('chart-population-impact').getContext('2d');
+    chartInstances.population = new Chart(ctx1, {
+      type: 'bar',
+      data: {
+        labels: popLabels,
+        datasets: [{
+          label: 'People Affected',
+          data: popData,
+          backgroundColor: 'rgba(245, 158, 11, 0.35)',
+          borderColor: '#f59e0b',
+          borderWidth: 1.5,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)', borderColor: 'rgba(245, 158, 11, 0.3)', borderWidth: 1 }
+        },
+        scales: {
+          x: { grid: { color: chartGridColor }, ticks: { color: chartTextColor, font: chartFont } },
+          y: { grid: { display: false }, ticks: { color: chartTextColor, font: chartFont } }
+        }
+      }
+    });
+
+    // 2. Disaster Types Breakdown (Doughnut Chart)
+    const typeDist = cachedAnalytics.type_dist || {};
+    const typeLabels = Object.keys(typeDist);
+    const typeData = Object.values(typeDist);
+    const typeColors = ['#f59e0b', '#06b6d4', '#10b981', '#ef4444', '#8b5cf6', '#f97316'];
+    const ctx2 = document.getElementById('chart-disaster-types').getContext('2d');
+    chartInstances.types = new Chart(ctx2, {
+      type: 'doughnut',
+      data: {
+        labels: typeLabels,
+        datasets: [{
+          data: typeData,
+          backgroundColor: typeColors.map(c => c + '77'),
+          borderColor: '#0f172a',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { color: chartTextColor, font: chartFont } },
+          tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)', borderColor: 'rgba(255, 255, 255, 0.08)', borderWidth: 1 }
+        },
+        cutout: '60%'
+      }
+    });
+
+    // 3. Depot Supplies Stockpile (Grouped Bar Chart)
+    const inv = cachedInventory;
+    const baseCap = { food: 120000, water: 200000, medical_kits: 2000, rescue_teams: 50 };
+    const remData = [inv.food || 0, inv.water || 0, inv.medical_kits || 0, inv.rescue_teams || 0];
+    const usedData = [
+      Math.max(0, baseCap.food - (inv.food || 0)),
+      Math.max(0, baseCap.water - (inv.water || 0)),
+      Math.max(0, baseCap.medical_kits - (inv.medical_kits || 0)),
+      Math.max(0, baseCap.rescue_teams - (inv.rescue_teams || 0))
+    ];
+    const ctx3 = document.getElementById('chart-resource-util').getContext('2d');
+    chartInstances.resources = new Chart(ctx3, {
+      type: 'bar',
+      data: {
+        labels: ['Food', 'Water', 'Medical Kits', 'Rescue Teams'],
+        datasets: [
+          {
+            label: 'Remaining Stock',
+            data: remData,
+            backgroundColor: 'rgba(16, 185, 129, 0.45)',
+            borderColor: '#10b981',
+            borderWidth: 1.5,
+            borderRadius: 4
+          },
+          {
+            label: 'Utilized Stock',
+            data: usedData,
+            backgroundColor: 'rgba(239, 68, 68, 0.45)',
+            borderColor: '#ef4444',
+            borderWidth: 1.5,
+            borderRadius: 4
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: chartTextColor, font: chartFont } },
+          tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)', borderColor: 'rgba(255, 255, 255, 0.08)', borderWidth: 1 }
+        },
+        scales: {
+          x: { grid: { color: chartGridColor }, ticks: { color: chartTextColor, font: chartFont } },
+          y: { grid: { color: chartGridColor }, ticks: { color: chartTextColor, font: chartFont } }
+        }
+      }
+    });
+
+    // 4. Incident Severity Distribution (Bar Chart)
+    const sevDist = cachedAnalytics.severity_dist || {};
+    const sevLabels = ['Low', 'Medium', 'High', 'Critical'];
+    const sevData = [
+      (sevDist.Low || 0),
+      ((sevDist.Medium || 0) + (sevDist.Moderate || 0)),
+      (sevDist.High || 0),
+      (sevDist.Critical || 0)
+    ];
+    const sevColors = ['#10b981', '#f59e0b', '#f97316', '#ef4444'];
+    const ctx4 = document.getElementById('chart-severity-dist').getContext('2d');
+    chartInstances.severity = new Chart(ctx4, {
+      type: 'bar',
+      data: {
+        labels: sevLabels,
+        datasets: [{
+          label: 'Incidents Count',
+          data: sevData,
+          backgroundColor: sevColors.map(c => c + '77'),
+          borderColor: sevColors,
+          borderWidth: 1.5,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)', borderColor: 'rgba(255, 255, 255, 0.08)', borderWidth: 1 }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: chartTextColor, font: chartFont } },
+          y: { grid: { color: chartGridColor }, ticks: { color: chartTextColor, font: chartFont, stepSize: 1 } }
+        }
+      }
+    });
+
+    // 5. Incident Timeline Surge (Line Chart)
+    const sortedIncs = [...cachedIncidents].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    const timelineLabels = sortedIncs.map(inc => {
+      const dt = new Date(inc.timestamp);
+      return `${dt.getHours().toString().padStart(2,'0')}:${dt.getMinutes().toString().padStart(2,'0')}`;
+    });
+    const timelineData = sortedIncs.map((_, i) => i + 1);
+    const ctx5 = document.getElementById('chart-incident-timeline').getContext('2d');
+    chartInstances.timeline = new Chart(ctx5, {
+      type: 'line',
+      data: {
+        labels: timelineLabels,
+        datasets: [{
+          label: 'Cumulative Surge',
+          data: timelineData,
+          backgroundColor: 'rgba(6, 182, 212, 0.15)',
+          borderColor: '#06b6d4',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.3,
+          pointBackgroundColor: '#06b6d4',
+          pointRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)', borderColor: 'rgba(6, 182, 212, 0.3)', borderWidth: 1 }
+        },
+        scales: {
+          x: { grid: { color: chartGridColor }, ticks: { color: chartTextColor, font: chartFont } },
+          y: { grid: { color: chartGridColor }, ticks: { color: chartTextColor, font: chartFont, stepSize: 1 } }
+        }
+      }
+    });
+
+  } catch(e) {
+    console.error(e);
+    toast('Chart Error', e.message, 'error');
+  }
+}
+
+// ── DISPATCH QUEUE ────────────────────────────────────────
+async function loadQueue() {
+  try {
+    const queue = await apiFetch('/api/queue');
+    document.getElementById('queue-count').textContent = queue.length;
+    const el = document.getElementById('queue-list');
+    if (!queue.length) { el.innerHTML = '<div class="loading-text">Dispatch queue is empty. All cases coordinated.</div>'; return; }
+    el.innerHTML = queue.map((inc,i) => {
+      const node = cachedNodes.find(n => n.node_id === inc.location_id);
+      return `<div class="queue-item">
+        <div class="queue-num">#${i+1}</div>
+        <div class="queue-info">
+          <strong>${inc.incident_id} — ${inc.disaster_type}</strong>
+          <small>📍 ${node ? node.name : inc.location_id} | Pop: ${fmtPop(inc.population_affected)}</small>
+        </div>
+        ${sevBadge(inc.severity)}
+      </div>`;
+    }).join('');
+    lucide.createIcons();
+  } catch(e) { toast('Queue Error', e.message, 'error'); }
+}
+
+async function dequeue() {
+  try {
+    const item = await apiFetch('/api/queue/dequeue', {method:'POST'});
+    if (item.message) { toast('Queue Empty', 'No more incidents in dispatch queue.', 'warning'); return; }
+    const node = cachedNodes.find(n => n.node_id === item.location_id);
+    document.getElementById('last-dispatched').innerHTML = `
+      <div class="result-card">
+        <div class="fw-700 mb-12" style="font-size:1rem;color:var(--text-primary)">📤 ${item.incident_id} Dispatched</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.8rem">
+          <div><span class="text-muted">Type:</span> <b>${item.disaster_type}</b></div>
+          <div><span class="text-muted">Severity:</span> ${sevBadge(item.severity)}</div>
+          <div><span class="text-muted">Location:</span> <b>${node ? node.name : item.location_id}</b></div>
+          <div><span class="text-muted">Population:</span> <b style="color:var(--brand-amber)">${fmtPop(item.population_affected)}</b></div>
+          <div style="grid-column:span 2"><span class="text-muted">Reporter:</span> <b>${item.reporter}</b></div>
+          <div style="grid-column:span 2;font-size:0.75rem;color:var(--text-secondary);margin-top:4px">${item.description || 'No description provided'}</div>
+        </div>
+      </div>`;
+    toast('📤 Case Dispatched', item.incident_id+' removed from triage queue.', 'success');
+    await loadAll();
+    loadQueue();
+  } catch(e) { toast('Error', e.message, 'error'); }
+}
+
+// ── Severity Auto-Detection Listener ───────────────────────
+function updateWebSeverity() {
+  const popVal = parseInt(document.getElementById('inc-population').value);
+  const sevEl = document.getElementById('inc-severity');
+  if (isNaN(popVal) || popVal < 1) {
+    sevEl.value = '';
+    return;
+  }
+  if (popVal < 1000) {
+    sevEl.value = 'Low';
+  } else if (popVal < 5000) {
+    sevEl.value = 'Medium';
+  } else if (popVal < 20000) {
+    sevEl.value = 'High';
+  } else {
+    sevEl.value = 'Critical';
+  }
+}
+document.getElementById('inc-population').addEventListener('input', updateWebSeverity);
+document.getElementById('inc-population').addEventListener('change', updateWebSeverity);
+
+// ── INIT ──────────────────────────────────────────────────
+loadAll();
+// Auto refresh dashboard every 30s
+setInterval(() => {
+  const active = document.querySelector('.nav-item.active');
+  if (active && active.id === 'nav-dashboard') loadAll();
+}, 30000);
+</script>
+</body>
+</html>
